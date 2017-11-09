@@ -1,0 +1,1 @@
+start java -jar ../target/phdfms-mogon-web-SNAPSHOT-0.0.1.jar --server.port=8282

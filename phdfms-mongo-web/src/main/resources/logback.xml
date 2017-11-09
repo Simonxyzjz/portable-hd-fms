@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <property name="log_name" value="phdfms-mongo-web" /> 
+    <property name="log_base" value="D:/jidian/logs" /> 
+    <property name="charset" value="utf-8"></property> 
+    <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"></property> 
+    <property name="fileSize" value="100MB"></property> 
+    <property name="fileMaxHistory" value="30"></property> 
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"> 
+            <pattern>${pattern}</pattern>   
+            <charset>${charset}</charset>
+        </encoder> 
+    </appender>
+    
+    <appender name="FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender">   
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log_base}/${log_name}%d{yyyy-MM-dd}-%i.log.gz</FileNamePattern> 
+            <MaxHistory>${fileMaxHistory}</MaxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>${fileSize}</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy> 
+        </rollingPolicy>   
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"> 
+            <pattern>${pattern}</pattern>   
+            <charset>${charset}</charset>
+        </encoder> 
+    </appender> 
+    
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root> 
+</configuration>
