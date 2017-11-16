@@ -5,36 +5,47 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsCriteria;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
 
 import simonxyzjz.phdfms.mongo.domain.FileEntity;
 import simonxyzjz.phdfms.mongo.mapper.FileEntityMapper;
+import simonxyzjz.phdfms.mongo.repository.MyPageable;
 import simonxyzjz.phdfms.mongo.service.FileScanService;
+import simonxyzjz.phdfms.mongo.vo.TempVO;
 
 
-@Controller
-@RequestMapping("/api/v1")
+@RestController
+@RequestMapping("/fms")
 public class MainController {
+
 
 	@Autowired
 	private GridFsTemplate gridFsTemplate;
@@ -44,6 +55,65 @@ public class MainController {
 	@Autowired
 	private FileScanService fileScanService;
 	
+    @RequestMapping
+    public  Map<String,Object> getAll(TempVO param, String draw,
+                             @RequestParam(required = false, defaultValue = "1") int start,
+                             @RequestParam(required = false, defaultValue = "10") int length){
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("draw",draw);
+        List<Order> orders = new ArrayList<Order>();  //排序
+        orders.add(new Order(Direction.DESC, "createdAt"));
+        Sort sort = new Sort(orders);
+        MyPageable page = new MyPageable();
+        page.setNumber(start/length);
+        page.setSize(length);
+        page.setSort(sort);
+        
+        Query query = new Query();
+        String id = StringUtils.trimToNull(param.getId());
+        if(id != null) {
+            query.addCriteria(Criteria.where("id").is(new ObjectId(id)));
+        }
+        
+        String md5 = StringUtils.trimToNull(param.getMd5());
+        if(md5 != null) {
+            query.addCriteria(Criteria.where("md5").is(md5));
+        }
+        
+        String name = StringUtils.trimToNull(param.getName());
+        if(name != null) {
+            query.addCriteria(Criteria.where("name").is(name));
+        }
+        
+        String path = StringUtils.trimToNull(param.getPath());
+        if(path != null) {
+            query.addCriteria(Criteria.where("path").is(path));
+        }
+        
+        
+        Long total = mongoTemplate.count(query, FileEntity.class);
+
+        map.put("recordsTotal", total);
+        map.put("recordsFiltered", total);
+        List<FileEntity> fileEntities = mongoTemplate.find(query.with(page), FileEntity.class);
+        List<TempVO> dataList = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(fileEntities)) {
+        	fileEntities.forEach(e -> {
+        		TempVO vo = new TempVO();
+        		vo.setId(e.getId());
+        		vo.setMd5(e.getMd5());
+        		vo.setName(e.getName());
+        		vo.setPath(e.getPath());
+        		vo.setLastModified(new DateTime(e.getLastModified()).toString("yyyyMMdd HH:mm:ss"));
+        		vo.setCreatedAt(new DateTime(e.getCreatedAt()).toString("yyyyMMdd HH:mm:ss"));
+        		vo.setDirectory(e.isDirectory());
+        		dataList.add(vo);
+        		});
+        }
+        map.put("data", dataList);
+        return map;
+    }
 
 	@ResponseBody
 	@RequestMapping(value = "/gfs/file", method = RequestMethod.POST)

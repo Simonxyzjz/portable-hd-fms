@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
     <property name="log_name" value="phdfms-mongo-web" /> 
-    <property name="log_base" value="D:/jidian/logs" /> 
+    <property name="log_base" value="logs" /> 
     <property name="charset" value="utf-8"></property> 
     <property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"></property> 
     <property name="fileSize" value="100MB"></property> 
