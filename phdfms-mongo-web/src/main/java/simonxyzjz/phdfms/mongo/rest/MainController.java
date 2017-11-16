@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -37,8 +36,10 @@ import com.mongodb.gridfs.GridFSFile;
 
 import simonxyzjz.phdfms.mongo.domain.FileEntity;
 import simonxyzjz.phdfms.mongo.mapper.FileEntityMapper;
+import simonxyzjz.phdfms.mongo.mapper.FileEntityVOMapper;
 import simonxyzjz.phdfms.mongo.repository.MyPageable;
 import simonxyzjz.phdfms.mongo.service.FileScanService;
+import simonxyzjz.phdfms.mongo.vo.FileEntityVO;
 import simonxyzjz.phdfms.mongo.vo.TempVO;
 
 
@@ -97,17 +98,10 @@ public class MainController {
         map.put("recordsTotal", total);
         map.put("recordsFiltered", total);
         List<FileEntity> fileEntities = mongoTemplate.find(query.with(page), FileEntity.class);
-        List<TempVO> dataList = new ArrayList<>();
+        List<FileEntityVO> dataList = new ArrayList<>();
         if(!CollectionUtils.isEmpty(fileEntities)) {
         	fileEntities.forEach(e -> {
-        		TempVO vo = new TempVO();
-        		vo.setId(e.getId());
-        		vo.setMd5(e.getMd5());
-        		vo.setName(e.getName());
-        		vo.setPath(e.getPath());
-        		vo.setLastModified(new DateTime(e.getLastModified()).toString("yyyyMMdd HH:mm:ss"));
-        		vo.setCreatedAt(new DateTime(e.getCreatedAt()).toString("yyyyMMdd HH:mm:ss"));
-        		vo.setDirectory(e.isDirectory());
+        		FileEntityVO vo = FileEntityVOMapper.map(e);
         		dataList.add(vo);
         		});
         }

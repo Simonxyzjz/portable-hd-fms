@@ -1,9 +1,8 @@
 package simonxyzjz.phdfms.mongo.mapper;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 
 import simonxyzjz.phdfms.mongo.domain.FileEntity;
@@ -11,14 +10,14 @@ import simonxyzjz.phdfms.mongo.vo.FileEntityVO;
 
 public class FileEntityVOMapper {
 	
-	public static FileEntityVO map(FileEntity entity) throws IOException {
+	public static FileEntityVO map(FileEntity entity) {
 		FileEntityVO vo = new FileEntityVO();
 		BeanUtils.copyProperties(entity, vo);
 		
-		vo.setLastModifiedDate(entity.getLastModified()==null?null:new Date(entity.getLastModified()));
+		vo.setLastModifiedDate(new DateTime(entity.getLastModified()).toString("yyyyMMdd HH:mm:ss"));
 		vo.setSize(toByteUnit(entity.getLength()));
-		vo.setCreatedDate(entity.getCreatedAt()==null?null:new Date(entity.getCreatedAt()));
-		vo.setUpdatedDate(entity.getUpdatedAt()==null?null:new Date(entity.getUpdatedAt()));
+		vo.setCreatedDate(new DateTime(entity.getLastModified()).toString("yyyyMMdd HH:mm:ss"));
+		vo.setUpdatedDate(new DateTime(entity.getUpdatedAt()).toString("yyyyMMdd HH:mm:ss"));
 		return vo;
 	}
 	

@@ -1,7 +1,6 @@
 package simonxyzjz.phdfms.mongo.vo;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ public class FileEntityVO implements Serializable {
 	private String pid;
 	private String name;
 	private String path;
-	private Date lastModifiedDate;
+	private String lastModifiedDate;
 	private boolean directory;
 	private boolean writable;
 	private boolean readable;
@@ -30,7 +29,7 @@ public class FileEntityVO implements Serializable {
 	private String parent;
 	private String md5;
 	private String ext;
-	private Date createdDate;
-	private Date updatedDate;
+	private String createdDate;
+	private String updatedDate;
 	
 }

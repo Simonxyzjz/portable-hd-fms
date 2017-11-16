@@ -80,6 +80,7 @@
                                 <th>路径</th>
                                 <th>MD5</th>
                                 <th>目录？</th>
+                                <th>大小</th>
                                 <th>修改日期</th>
                                 <th>入库日期</th>
                             </tr>
@@ -176,11 +177,12 @@
                 { "data": "path" },
                 { "data": "md5" },
                 { "data": "directory" },
-                { "data": "lastModified" },
-                { "data": "createdAt" },
+                { "data": "size" },
+                { "data": "lastModifiedDate" },
+                { "data": "createdDate" },
             ],
             "columnDefs":[
-                { "orderable": false, "targets": [0,1,2,3,4] },
+                { "orderable": false, "targets": [0,1,2,3,4,5] },
                 { "type": "datetime-moment", "targets": [5,6] },
             ],
 
