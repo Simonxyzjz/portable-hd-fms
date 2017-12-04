@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.mortbay.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
 
+import lombok.extern.slf4j.Slf4j;
 import simonxyzjz.phdfms.mongo.domain.FileEntity;
 import simonxyzjz.phdfms.mongo.mapper.FileEntityMapper;
 import simonxyzjz.phdfms.mongo.mapper.FileEntityVOMapper;
@@ -42,7 +44,7 @@ import simonxyzjz.phdfms.mongo.service.FileScanService;
 import simonxyzjz.phdfms.mongo.vo.FileEntityVO;
 import simonxyzjz.phdfms.mongo.vo.TempVO;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/fms")
 public class MainController {
@@ -181,6 +183,22 @@ public class MainController {
 			e.printStackTrace();
 		}
 		return ResponseEntity.ok("ok");
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/scan", method = RequestMethod.POST)
+	public ResponseEntity<?> scanDir(HttpServletRequest request) throws Exception {
+
+		try {
+			String dir = request.getParameter("dir");
+			String diskName = request.getParameter("diskName");
+			log.info("{}, {}", dir, diskName);
+			
+		} catch (Exception e) {
+			log.error("扫描目录出错", e);
+			return ResponseEntity.badRequest().body("error");
+		}
+		return ResponseEntity.ok("success");
 	}
 	
 	@ResponseBody

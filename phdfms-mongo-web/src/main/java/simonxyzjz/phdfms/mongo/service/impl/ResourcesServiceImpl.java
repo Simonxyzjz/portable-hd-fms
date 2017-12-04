@@ -22,18 +22,20 @@ public class ResourcesServiceImpl implements ResourcesService {
 	static {
 		log.info("**********静态数据初始化**********");
 		/*
-1	系统设置	/system						0	0	1
-2	用户管理	/usersPage					1	1	2
-3	角色管理	/rolesPage					1	1	3
-4	资源管理	/resourcesPage				1	1	4
-5	添加用户	/users/add					2	2	5
-6	删除用户	/users/delete				2	2	6
-7	添加角色	/roles/add					2	3	7
-8	删除角色	/roles/delete				2	3	8
-9	添加资源	/resources/add				2	4	9
-10	删除资源	/resources/delete			2	4	10
-11	分配角色	/users/saveUserRoles		2	2	11
-13	分配权限	/roles/saveRoleResources	2	3	12
+		   type  '资源类型   1:菜单    2：按钮'
+id  name    url                         type	parent	sort
+1	系统设置	/system						0		0		1
+2	用户管理	/usersPage					1		1		2
+3	角色管理	/rolesPage					1		1		3
+4	资源管理	/resourcesPage				1		1		4
+5	添加用户	/users/add					2		2		5
+6	删除用户	/users/delete				2		2		6
+7	添加角色	/roles/add					2		3		7
+8	删除角色	/roles/delete				2		3		8
+9	添加资源	/resources/add				2		4		9
+10	删除资源	/resources/delete			2		4		10
+11	分配角色	/users/saveUserRoles		2		2		11
+13	分配权限	/roles/saveRoleResources	2		3		12
 		 * 
 		 */
 		
@@ -42,10 +44,19 @@ public class ResourcesServiceImpl implements ResourcesService {
 		res1.setId(1);
 		res1.setName("P-HD-FMS");
 		res1.setResurl("/fmsPage");
-		res1.setType(0);
+		res1.setType(1);
 		res1.setParentid(0);
 		res1.setSort(1);
 		resourcesList.add(res1);
+		Resources res2 = new Resources();
+		
+		res2.setId(2);
+		res2.setName("Scan Dir");
+		res2.setResurl("/fms/scan");
+		res2.setType(2);
+		res2.setParentid(1);
+		res2.setSort(1);
+		resourcesList.add(res2);
 	}
 
 	@Override

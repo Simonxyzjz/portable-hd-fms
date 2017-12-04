@@ -1,11 +1,15 @@
 package simonxyzjz.phdfms.mongo.rest;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,7 +57,10 @@ public class ResourcesController {
 		map.put("type", 1);
 		map.put("userid", userid);
 		List<Resources> resourcesList = resourcesService.loadUserResources(map);
-		return resourcesList;
+		// 只取类型为"菜单"的项（type=1）
+		return resourcesList.stream().filter(e -> 
+			e.getType()==1).collect(Collectors.toList());
+		
 	}
 
 	@CacheEvict(cacheNames = "resources", allEntries = true)

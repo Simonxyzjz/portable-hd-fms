@@ -66,8 +66,8 @@
                             </select>
                         </div>
                         <button type="button"  onclick="search();" class="btn btn-primary">查询</button>
-                       <!--  <button shiro:hasPermission="/users/add" type="button"  onclick="$('#addUser').modal();" class="btn btn-info" style="float: right; margin-right: 1px;">新增</button>
-                        <button shiro:hasPermission="/users/delete" type="button"  onclick="delByID();" class="btn btn-info" style="float: right; margin-right: 1px;">删除</button>
+                       	<button shiro:hasPermission="/fms/scan" type="button"  onclick="$('#scanDirDialog').modal();" class="btn btn-info" style="float: right; margin-right: 1px;">扫描</button>
+                        <!--<button shiro:hasPermission="/users/delete" type="button"  onclick="delByID();" class="btn btn-info" style="float: right; margin-right: 1px;">删除</button>
                         <button shiro:hasPermission="/users/saveUserRoles" type="button"  onclick="allotRole();" class="btn btn-info" style="float: right; margin-right: 1px;">分配角色</button>-->
                     </form>
 
@@ -95,6 +95,35 @@
 </div>
 
 
+<!--添加弹框-->
+<div class="modal fade" id="scanDirDialog" tabindex="-1" role="dialog" aria-labelledby="scanDirLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scanDirLabel">扫描目录</h4>
+            </div>
+            <div class="modal-body">
+                <form id="scanDirForm">
+                    <div class="form-group">
+                        <label  class="control-label">目标目录:</label>
+                        <input type="text" class="form-control" name="dir" id="dir" placeholder="请输入目标目录"/>
+                        <span class="btn-action single glyphicons circle_question_mark" data-toggle="tooltip" data-placement="top" data-original-title="必填"><i></i></span>
+                    </div>
+                    <div class="form-group">
+                        <label  class="control-label">磁盘标识:</label>
+                        <input type="password" class="form-control" id="diskName" name="diskName"  placeholder="请输入磁盘标识"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" onclick="scanDir();" class="btn btn-primary">开始扫描</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/添加弹框-->
 
 <!--Footer-part-->
 <!-- <div class="row-fluid">
@@ -209,6 +238,43 @@
         param.length = data.length;
         param.draw = data.draw;
         return param;
+    }
+    
+  //添加用户
+    function scanDir() {
+        var dir = $("#dir").val();
+        var diskName = $("#diskName").val();
+        if(dir == "" || dir == undefined || dir == null){
+            return layer.msg('目标目录不能为空', function(){
+                //关闭后的操作
+            });
+        }
+        if(diskName == "" || diskName == undefined || diskName == null){
+            return layer.msg('磁盘标识不能为空', function(){
+                //关闭后的操作
+            });
+        }
+
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url:'fms/scan',
+            data:$('#scanDirForm').serialize(),// 你的formid
+            async: false,
+            success: function(data) {
+                if(data=="success"){
+                    layer.msg('扫描成功');
+                    table.ajax.reload();
+                    $('#scanDirDialog').modal('hide');
+                }else if(data="error"){
+                    layer.msg('扫描成功出错');
+                    $('#scanDirDialog').modal('hide');
+                }else{
+                    layer.msg('扫描失败');
+                    $('#scanDirDialog').modal('hide');
+                }
+            }
+        });
     }
 
 </script>

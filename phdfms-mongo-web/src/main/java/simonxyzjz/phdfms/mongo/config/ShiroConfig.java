@@ -50,6 +50,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/images/**", "anon");
 		filterChainDefinitionMap.put("/easyui/**", "anon");
 		filterChainDefinitionMap.put("/font-awesome/**", "anon");
+		filterChainDefinitionMap.put("/favicon.ico","anon");
 		filterChainDefinitionMap.put("/**", "authc");
 
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
@@ -98,8 +99,8 @@ public class ShiroConfig {
 	@Bean(name = "securityManager")  
     public DefaultWebSecurityManager defaultWebSecurityManager(MyShiroRealm myShiroRealm){  
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(myShiroRealm);  
-        securityManager.setCacheManager(getEhCacheManager());  
+        securityManager.setRealm(myShiroRealm);
+        securityManager.setCacheManager(getEhCacheManager());
         return securityManager;  
     } 
 
