@@ -15,6 +15,7 @@ public class TempVO implements Serializable {
 	private String id;
 	private String name;
 	private String path;
+	private Integer filter;
 	private String lastModified;
 	private String createdAt;
 	private Boolean directory;

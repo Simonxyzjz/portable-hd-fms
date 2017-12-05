@@ -59,7 +59,7 @@ public class MainController {
 	
     @RequestMapping
     public  Map<String,Object> getAll(TempVO param, String draw,
-                             @RequestParam(required = false, defaultValue = "1") int start,
+                             @RequestParam(required = false, defaultValue = "0") int start,
                              @RequestParam(required = false, defaultValue = "10") int length){
 
         Map<String,Object> map = new HashMap<>();
@@ -68,7 +68,7 @@ public class MainController {
         orders.add(new Order(Direction.DESC, "createdAt"));
         Sort sort = new Sort(orders);
         MyPageable page = new MyPageable();
-        page.setNumber(start/length);
+        page.setNumber(start/length+1);
         page.setSize(length);
         page.setSort(sort);
         
@@ -85,15 +85,21 @@ public class MainController {
         
         String name = StringUtils.trimToNull(param.getName());
         if(name != null) {
-            query.addCriteria(Criteria.where("name").is(name));
+            query.addCriteria(Criteria.where("name").regex(name));
         }
         
         String path = StringUtils.trimToNull(param.getPath());
         if(path != null) {
             query.addCriteria(Criteria.where("path").is(path));
         }
-        
-        
+        if(param.getFilter()!=null) {
+        	if(param.getFilter()==1) {
+        		query.addCriteria(Criteria.where("directory").is(true));
+        	}
+	        if(param.getFilter()==2) {
+	    		query.addCriteria(Criteria.where("directory").is(false));
+	    	}
+        }
         Long total = mongoTemplate.count(query, FileEntity.class);
 
         map.put("recordsTotal", total);
