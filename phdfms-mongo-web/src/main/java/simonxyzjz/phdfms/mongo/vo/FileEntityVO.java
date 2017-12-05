@@ -12,6 +12,7 @@ import lombok.Setter;
 public class FileEntityVO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private String diskName;
 	private String id;
 	private String pid;
 	private String name;

@@ -48,15 +48,24 @@ id  name    url                         type	parent	sort
 		res1.setParentid(0);
 		res1.setSort(1);
 		resourcesList.add(res1);
-		Resources res2 = new Resources();
 		
+		Resources res2 = new Resources();
 		res2.setId(2);
-		res2.setName("Scan Dir");
-		res2.setResurl("/fms/scan");
+		res2.setName("Scan New Dir");
+		res2.setResurl("/fms/scan/new");
 		res2.setType(2);
 		res2.setParentid(1);
 		res2.setSort(1);
 		resourcesList.add(res2);
+		
+		Resources res3 = new Resources();
+		res3.setId(3);
+		res3.setName("Scan Update Dir");
+		res3.setResurl("/fms/scan/update");
+		res3.setType(2);
+		res3.setParentid(1);
+		res3.setSort(2);
+		resourcesList.add(res3);
 	}
 
 	@Override

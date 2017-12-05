@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.mortbay.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -110,6 +109,23 @@ public class MainController {
         map.put("data", dataList);
         return map;
     }
+    
+    @RequestMapping(value ="/scan/details", method = RequestMethod.GET)
+    public ResponseEntity<?> getDetails(String id) {
+    	 Query query = new Query();
+         String idStr = StringUtils.trimToNull(id);
+
+ 		Map<String, Object> result = new HashMap<>();
+         if(StringUtils.isNotBlank(idStr)) {
+             query.addCriteria(Criteria.where("id").is(new ObjectId(id)));
+             FileEntity record = mongoTemplate.findOne(query, FileEntity.class);
+             FileEntityVO vo = FileEntityVOMapper.map(record);
+             result.put("code", 1);
+             result.put("msg", "操作成功");
+             result.put("result", vo);
+         }
+    	return ResponseEntity.ok(result);
+    }
 
 	@ResponseBody
 	@RequestMapping(value = "/gfs/file", method = RequestMethod.POST)
@@ -152,46 +168,62 @@ public class MainController {
 		}
 		return ResponseEntity.ok("ok");
 	}
-
+	
 	@ResponseBody
-	@RequestMapping(value = "/dir/struct", method = RequestMethod.POST)
-	public ResponseEntity<?> storeStruct(HttpServletRequest request) throws Exception {
+	@RequestMapping(value = "/scan/new", method = RequestMethod.POST)
+	public ResponseEntity<?> scanNewDir(HttpServletRequest request) throws Exception {
 
+		Map<String, Object> result = new HashMap<>();
 		try {
-			String path = request.getParameter("path");
-			if(StringUtils.isNotBlank(path)) {
-				File file = FileUtils.getFile(path);
+			String dir = request.getParameter("newDir");
+			String diskName = request.getParameter("newDiskName");
+			
+			log.info("{}, {}", dir, diskName);
+			if(StringUtils.isNotBlank(dir)) {
+				File file = FileUtils.getFile(dir);
 				if(file.isDirectory()) {
 					Query query = new Query();
-					query.addCriteria(Criteria.where("path").is(path));
+					query.addCriteria(Criteria.where("path").is(dir).and("diskName").is(diskName));
 					FileEntity dbEntity = mongoTemplate.findOne(query, FileEntity.class);
 					if(dbEntity == null) {
 
 						FileEntity entity = FileEntityMapper.map(file);
+						entity.setDiskName(diskName);
 						mongoTemplate.save(entity);
 						
-						scanDirectory(file,entity.getId());
+						scanDirectory(diskName, file, entity.getId());
 					} else {
-						return ResponseEntity.ok("path has already been processed");
+						result.put("code", 2);
+						result.put("msg", "数据库存在对于的目录，请更新");
+						return ResponseEntity.ok(result);
 					}
 				} else {
-					return ResponseEntity.ok("path is not exist or not a directory");
+					result.put("code", 3);
+					result.put("msg", "路径不存在，请重新输入");
+					return ResponseEntity.ok(result);
 				}
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("扫描目录出错", e);
+			result.put("code", -1);
+			result.put("msg", "系统异常");
+			return ResponseEntity.badRequest().body(result);
 		}
-		return ResponseEntity.ok("ok");
+
+		result.put("code", 1);
+		result.put("msg", "操作成功");
+		return ResponseEntity.ok(result);
 	}
+
 	
 	@ResponseBody
-	@RequestMapping(value = "/scan", method = RequestMethod.POST)
-	public ResponseEntity<?> scanDir(HttpServletRequest request) throws Exception {
+	@RequestMapping(value = "/scan/udpate", method = RequestMethod.PUT)
+	public ResponseEntity<?> scanUpdateDir(HttpServletRequest request) throws Exception {
 
 		try {
-			String dir = request.getParameter("dir");
-			String diskName = request.getParameter("diskName");
+			String dir = request.getParameter("updateDir");
+			String diskName = request.getParameter("updateDiskName");
 			log.info("{}, {}", dir, diskName);
 			
 		} catch (Exception e) {
@@ -242,14 +274,34 @@ public class MainController {
 		return ResponseEntity.ok("ok");
 	}
 	
-	protected void scanDirectory(File file, String pid) throws IOException {
+	protected void scanDirectory(String diskName, File file, String pid) throws IOException {
 		for(File subFile : file.listFiles()) {
 			if(subFile.exists()) {
-				FileEntity subEntity = FileEntityMapper.map(subFile);
-				subEntity.setPid(pid);
-				mongoTemplate.save(subEntity);
 				if(subFile.isDirectory()) {
-					scanDirectory(subFile, subEntity.getId());
+					Query query = new Query();
+					query.addCriteria(Criteria.where("path").is(subFile.getPath()).and("diskName").is(diskName));
+					FileEntity dbEntity = mongoTemplate.findOne(query, FileEntity.class);
+					if(dbEntity == null) {
+						FileEntity subEntity = FileEntityMapper.map(subFile);
+						subEntity.setPid(pid);
+						subEntity.setDiskName(diskName);
+						mongoTemplate.save(subEntity);
+						scanDirectory(diskName, subFile, subEntity.getId());
+					} else {
+						log.warn("数据库已存在子目录[{}, {}]，跳过该目录", dbEntity.getId(), subFile.getPath());
+						if(dbEntity.getPid() == null) {
+							log.warn("该子目录[{}, {}]的父级ID为空，更新其值为：{}", dbEntity.getId(), subFile.getPath(), pid);
+							dbEntity.setPid(pid);
+							mongoTemplate.save(dbEntity);
+						}
+						continue;
+					}
+				}
+				else {
+					FileEntity subEntity = FileEntityMapper.map(subFile);
+					subEntity.setPid(pid);
+					subEntity.setDiskName(diskName);
+					mongoTemplate.save(subEntity);
 				}
 			}
 			

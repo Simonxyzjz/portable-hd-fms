@@ -19,7 +19,7 @@
 
 <!--Header-part-->
 <div id="header">
-    <h1>Simon's Admin</h1>
+    <h1><a href="#">P-HD-FMS Admin</a></h1>
 </div>
 <!--close-Header-part-->
 
@@ -28,9 +28,9 @@
 <div th:include="common/menu :: menu"></div>
 
 <div id="content">
-    <div id="content-header">
+<!--     <div id="content-header">
         <div id="breadcrumb"> <a href="#" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#" class="current">Tables</a> </div>
-    </div>
+    </div> -->
     <div class="container-fluid">
         <hr/>
         <div class="row-fluid">
@@ -66,15 +66,18 @@
                             </select>
                         </div>
                         <button type="button"  onclick="search();" class="btn btn-primary">查询</button>
-                       	<button shiro:hasPermission="/fms/scan" type="button"  onclick="$('#scanDirDialog').modal();" class="btn btn-info" style="float: right; margin-right: 1px;">扫描</button>
+                       	<button shiro:hasPermission="/fms/scan/new" type="button"  onclick="$('#scanNewDirDialog').modal();" class="btn btn-info" style="float: right; margin-right: 1px; margin-top: 1px;">扫描</button>
+                       	<button shiro:hasPermission="/fms/scan/update" type="button"  onclick="$('#scanUpdateDirDialog').modal();" class="btn btn-info" style="float: right; margin-right: 1px; margin-top: 1px;">更新</button>
                         <!--<button shiro:hasPermission="/users/delete" type="button"  onclick="delByID();" class="btn btn-info" style="float: right; margin-right: 1px;">删除</button>
                         <button shiro:hasPermission="/users/saveUserRoles" type="button"  onclick="allotRole();" class="btn btn-info" style="float: right; margin-right: 1px;">分配角色</button>-->
                     </form>
 
                     <div class="widget-content nopadding">
-                        <table class="table table-striped table-bordered" cellspacing="0" width="100%" id="datatable" >
+                        <table class="display" cellspacing="0" width="100%" id="datatable" >
                             <thead>
                             <tr>
+                            	<th>详情</th>
+                                <th>标识</th>
                                 <th>ID</th>
                                 <th>名称</th>
                                 <th>路径</th>
@@ -83,6 +86,7 @@
                                 <th>大小</th>
                                 <th>修改日期</th>
                                 <th>入库日期</th>
+                                <th>操作</th>
                             </tr>
                             </thead>
                         </table>
@@ -96,35 +100,87 @@
 
 
 <!--添加弹框-->
-<div class="modal fade" id="scanDirDialog" tabindex="-1" role="dialog" aria-labelledby="scanDirLabel">
+<div class="modal fade" id="scanNewDirDialog" tabindex="-1" role="dialog" aria-labelledby="scanNewDirLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="scanDirLabel">扫描目录</h4>
+                <h4 class="modal-title" id="scanNewDirLabel">扫描目录</h4>
             </div>
             <div class="modal-body">
-                <form id="scanDirForm">
+                <form id="scanNewDirForm">
                     <div class="form-group">
                         <label  class="control-label">目标目录:</label>
-                        <input type="text" class="form-control" name="dir" id="dir" placeholder="请输入目标目录"/>
+                        <input type="text" class="form-control" name="newDir" id="newDir" placeholder="请输入目标目录"/>
                         <span class="btn-action single glyphicons circle_question_mark" data-toggle="tooltip" data-placement="top" data-original-title="必填"><i></i></span>
                     </div>
                     <div class="form-group">
                         <label  class="control-label">磁盘标识:</label>
-                        <input type="password" class="form-control" id="diskName" name="diskName"  placeholder="请输入磁盘标识"/>
+                        <input type="text" class="form-control" id="newDiskName" name="newDiskName"  placeholder="请输入磁盘标识"/>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" onclick="scanDir();" class="btn btn-primary">开始扫描</button>
+                <button type="button" onclick="scanNewDir();" class="btn btn-primary">开始扫描</button>
             </div>
         </div>
     </div>
 </div>
 <!--/添加弹框-->
 
+
+<!--更新弹框-->
+<div class="modal fade" id="scanUpdateDirDialog" tabindex="-1" role="dialog" aria-labelledby="scanUpdateDirLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scanUpdateDirLabel">扫描目录</h4>
+            </div>
+            <div class="modal-body">
+                <form id="scanUpdateDirForm">
+                    <div class="form-group">
+                        <label  class="control-label">目标目录:</label>
+                        <input type="text" class="form-control" name="updateDir" id="updateDir" placeholder="请输入目标目录"/>
+                        <span class="btn-action single glyphicons circle_question_mark" data-toggle="tooltip" data-placement="top" data-original-title="必填"><i></i></span>
+                    </div>
+                    <div class="form-group">
+                        <label  class="control-label">磁盘标识:</label>
+                        <input type="text" class="form-control" id="updateDiskName" name="updateDiskName"  placeholder="请输入磁盘标识"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" onclick="scanUpdateDir();" class="btn btn-primary">开始扫描</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/更新弹框-->
+
+
+<!--详情弹框-->
+<div class="modal fade" id="detailDialog" tabindex="-1" role="dialog" aria-labelledby="detailLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="detailLabel">记录详情</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label  class="control-label">磁盘标识:</label><span id="dDiskName" name="dDiskName"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/详情弹框-->
 <!--Footer-part-->
 <!-- <div class="row-fluid">
     <div id="footer" class="span12"> 2017 &copy; yqj <a href="http://themedesigner.in/">Themedesigner.in</a> </div>
@@ -142,11 +198,16 @@
 	$.ajaxSetup({
 	    error:function(XMLHttpRequest,textStatus){
 	          if(textStatus=="parsererror"){
-	               $.messager.alert('提示信息', "登陆超时！请重新登陆！", 'info',function(){
-	                   window.location.href = 'login.html';
-	               });
-	          } else if(textStatus=="error"){
-	              $.messager.alert('提示信息', "请求失败，请稍后再试！", 'info');
+	        	  layer.msg('登陆超时！请重新登陆！', {
+	        		  time: 0 //不自动关闭
+	        		  ,btn: ['重新登录']
+	        		  ,yes: function(index){
+	        		    layer.close(index);
+	        		    window.location.href = '/';
+	        		  }
+	        		});
+	          } else {
+	        	  layer.msg("请求失败，请稍后再试！");
 	          }
 	    }
 	});
@@ -156,6 +217,7 @@
     $(document).ready(function() {
         table = $('#datatable').DataTable( {
             "dom": '<"top"i>rt<"bottom"flp><"clear">',
+            "buttons": ['info'],
             "searching" : false,
             "ordering": false,
             "pagingType": "full_numbers",
@@ -201,6 +263,13 @@
                 });
             },
             "columns": [
+            	{
+                    "className": 'details-control',
+                    "orderable": false,
+                    "data": null,
+                    "defaultContent": ''
+                },
+                { "data": "diskName" },
                 { "data": "id" },
                 { "data": "name" },
                 { "data": "path" },
@@ -211,18 +280,81 @@
                 { "data": "createdDate" },
             ],
             "columnDefs":[
-                { "orderable": false, "targets": [0,1,2,3,4,5] },
-                { "type": "datetime-moment", "targets": [5,6] },
+                { "orderable": false, "targets": [0,1,2,3,4,5,6,7] },
+                { "type": "datetime-moment", "targets": [7,8] },
+                {
+                	// 定义操作列,######以下是重点########
+                	"targets" : 10,//操作按钮目标列
+                	"render" : function(data, type, row) {
+	                	var id = '"' + row.id + '"';
+	                	var html = "<a href='javascript:void(0);' class='delete btn btn-default btn-xs' onclick='details("+ id + ")' ><i class='fa fa-times'></i> 查看</a>"
+	                	return html;
+                	}
+                },
+                {
+                	// 定义操作列,######以下是重点########
+                	"targets" : 4,//操作按钮目标列
+	                render: function(data, type, row) { 
+	                    //然后是 内容太多用。。。。表示、内容不换行，鼠标移上去显示详情 
+	                    //这类问题最简单的肯定是使用css解决 
+	                    //    //1. table-layout: fixed 由于table-layout的默认值是auto， 
+	                    //即table的宽高将取决于其内容的多寡，如果内容的体积无法估测，那么最终表格的呈现形式也无法保证了， 
+	                    //fixed一下就好了。（注意：此样式是关键） 
+	                    //    //2. white-space: nowrap 是为了保证无论单元格（TD）中文本内容有多少， 
+	                    //都不会自动换行，此时多余的内容会在水平方向撑破单元格。 
+	                    //    //3. overflow: hidden 隐藏超出单元格的部分。 
+	                    //    //4. text-overflow: ellipsis 将被隐藏的那部分用省略号代替。 
+	                    //这4个css样式都可以百度出来的,第一个是写在table标签里面的,2、3、4写在td里面 
+	                    //我这里做个简单的示范 
+	                    return '<div style="width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" '+ 
+	                        'title="'+data +'">'+data+'</div>'; 
+	                }
+                }
             ],
 
         } );
 
-
+     // Add event listener for opening and closing details
+        $('#datatable tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = table.row( tr );
+     
+            if ( row.child.isShown() ) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child( format(row.data()) ).show();
+                tr.addClass('shown');
+            }
+        } );
 
     } );
 
-    function search(){
-        table.ajax.reload();
+    function format ( d ) {
+        // `d` is the original data object for the row
+        return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;"><tbody>'+
+            '<tr>'+
+                '<th>父级ID: </th>'+
+                '<td>'+d.pid+'</td>'+
+                '<th>父级路径: </th>'+
+                '<td>'+d.parent+'</td>'+
+            '</tr>'+
+            '<tr>'+
+                '<th>是否可读: </th>'+
+                '<td>'+d.readable+'</td>'+
+	            '<th>是否可写: </th>'+
+	            '<td>'+d.writable+'</td>'+
+            '</tr>'+
+            '<tr>'+
+	            '<th>是否可执行: </th>'+
+	            '<td>'+d.executable+'</td>'+
+	            '<th>是否隐藏: </th>'+
+	            '<td>'+d.hidden+'</td>'+
+    		'</tr>'+
+        '</tbody></table>';
     }
     
     //封装查询参数
@@ -240,10 +372,10 @@
         return param;
     }
     
-  //添加用户
-    function scanDir() {
-        var dir = $("#dir").val();
-        var diskName = $("#diskName").val();
+  //添加
+    function scanNewDir() {
+        var dir = $("#newDir").val();
+        var diskName = $("#newDiskName").val();
         if(dir == "" || dir == undefined || dir == null){
             return layer.msg('目标目录不能为空', function(){
                 //关闭后的操作
@@ -258,24 +390,54 @@
         $.ajax({
             cache: true,
             type: "POST",
-            url:'fms/scan',
-            data:$('#scanDirForm').serialize(),// 你的formid
+            url:'fms/scan/new',
+            data:$('#scanNewDirForm').serialize(),// 你的formid
             async: false,
             success: function(data) {
-                if(data=="success"){
-                    layer.msg('扫描成功');
+                layer.msg(data.msg);
+                if(data.code == 1){
                     table.ajax.reload();
-                    $('#scanDirDialog').modal('hide');
-                }else if(data="error"){
-                    layer.msg('扫描成功出错');
-                    $('#scanDirDialog').modal('hide');
-                }else{
-                    layer.msg('扫描失败');
-                    $('#scanDirDialog').modal('hide');
                 }
+                $('#scanNewDirDialog').modal('hide');
             }
         });
     }
+
+  //更新
+    function scanUpdateDir() {
+        var dir = $("#updateDir").val();
+        var diskName = $("#updateDiskName").val();
+        if(dir == "" || dir == undefined || dir == null){
+            return layer.msg('目标目录不能为空', function(){
+                //关闭后的操作
+            });
+        }
+        if(diskName == "" || diskName == undefined || diskName == null){
+            return layer.msg('磁盘标识不能为空', function(){
+                //关闭后的操作
+            });
+        }
+
+        $.ajax({
+            cache: true,
+            type: "GET",
+            url:'fms/scan/udpate',
+            data:$('#scanUpdateDirForm').serialize(),// 你的formid
+            async: false,
+            success: function(data) {
+
+                layer.msg(data.msg);
+                if(data.code == 1){
+                    table.ajax.reload();
+                }
+                $('#scanUpdateDirDialog').modal('hide');
+            }
+        });
+    }
+  
+  	function details(id) {
+  		layer.msg(id);
+  	}
 
 </script>
 

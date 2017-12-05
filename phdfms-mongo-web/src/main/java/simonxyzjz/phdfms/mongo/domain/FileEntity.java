@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document(collection="temp_test")
+@Document(collection="fms_coll")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,6 +15,8 @@ public class FileEntity {
 	
 	@Id
 	private String id;
+	
+	private String diskName;
 	
 	private String pid;
 	

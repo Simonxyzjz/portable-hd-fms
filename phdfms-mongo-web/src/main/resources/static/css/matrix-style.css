@@ -112,7 +112,7 @@ hr{ border-top-color:#dadada;}
 	padding: 0; border-left: 1px solid #2e363f; border-right: 1px solid #000;
 }
 #user-nav > ul > li > a {
-	padding:9px 10px;
+	padding: 15px 10px;
 	display: block;
 	font-size: 11px;
 }
@@ -1587,3 +1587,12 @@ form {
 	}
 	#sidebar .content{ display:none;}
 }
+
+td.details-control {
+    background: url('../images/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('../images/details_close.png') no-repeat center center;
+}
+
